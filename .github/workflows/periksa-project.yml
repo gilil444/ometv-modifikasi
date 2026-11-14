@@ -1,0 +1,26 @@
+
+name: Periksa Project Android
+
+on:
+  workflow_dispatch:
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ambil repository
+        uses: actions/checkout@v4
+
+      - name: Ekstrak ZIP
+        run: |
+          mkdir project
+          unzip companion-project.zip -d project
+
+      - name: Periksa isi project
+        run: |
+          echo "=== ISI PROJECT ==="
+          find project -maxdepth 5 -type f | sort
+
+          echo "=== PERIKSA GRADLE ==="
+          find project -name "gradlew" -o -name "build.gradle.kts"
