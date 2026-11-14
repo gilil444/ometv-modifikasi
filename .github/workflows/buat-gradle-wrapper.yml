@@ -1,0 +1,32 @@
+name: Buat Gradle Wrapper
+
+on:
+  workflow_dispatch:
+
+jobs:
+  wrapper:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ekstrak project
+        run: |
+          mkdir project
+          unzip companion-project.zip -d project
+
+      - name: Periksa Gradle
+        run: |
+          gradle --version
+          find project -name settings.gradle.kts -print
+
+      - name: Buat wrapper
+        run: |
+          cd project
+          gradle wrapper --gradle-version 8.9
+
+      - name: Simpan wrapper
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-wrapper
+          path: project/gradlew*
