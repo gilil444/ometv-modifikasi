@@ -1,0 +1,61 @@
+
+name: Siapkan Android Tools
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Apktool
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y apktool
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: ''
+
+      - name: Install Android Build Tools
+        run: |
+          sdkmanager --install \
+            "platform-tools" \
+            "platforms;android-35" \
+            "build-tools;35.0.0"
+
+          yes | sdkmanager --licenses
+
+          echo "$ANDROID_HOME/build-tools/35.0.0" >> "$GITHUB_PATH"
+
+      - name: Verify installed tools
+        shell: bash
+        run: |
+          set -eux
+
+          java -version
+          apktool --version
+
+          test -x "$ANDROID_HOME/build-tools/35.0.0/aapt"
+          test -x "$ANDROID_HOME/build-tools/35.0.0/aapt2"
+          test -x "$ANDROID_HOME/build-tools/35.0.0/apksigner"
+
+          aapt version
+          aapt2 version
+          apksigner version
+
+          echo "SEMUA ANDROID TOOLS BERHASIL DIPASANG"
