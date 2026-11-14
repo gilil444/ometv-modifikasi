@@ -1,0 +1,48 @@
+
+name: Build APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract project
+        run: unzip -o companion-project.zip -d project
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Build APK
+        run: |
+          SETTINGS=$(find project -name settings.gradle.kts -print -quit)
+          if [ -z "$SETTINGS" ]; then
+            echo "settings.gradle.kts tidak ditemukan"
+            exit 1
+          fi
+
+          PROJECT_DIR=$(dirname "$SETTINGS")
+          cd "$PROJECT_DIR"
+
+          if [ ! -f gradlew ]; then
+            echo "gradlew tidak ditemukan di folder proyek"
+            exit 1
+          fi
+
+          chmod +x gradlew
+          ./gradlew assembleDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: hasil-build-apk
+          path: project/**/build/outputs/apk/**/*.apk
+          if-no-files-found: error
