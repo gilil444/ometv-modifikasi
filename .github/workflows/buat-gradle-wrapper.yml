@@ -25,8 +25,13 @@ jobs:
           cd project
           gradle wrapper --gradle-version 8.9
 
-      - name: Simpan wrapper
+      
+      - name: Simpan wrapper lengkap
         uses: actions/upload-artifact@v4
         with:
-          name: gradle-wrapper
-          path: project/gradlew*
+          name: gradle-wrapper-lengkap
+          path: |
+            project/gradlew
+            project/gradlew.bat
+            project/gradle/wrapper/gradle-wrapper.jar
+            project/gradle/wrapper/gradle-wrapper.properties
